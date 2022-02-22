@@ -13,11 +13,16 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.4.0",
-	name: "Liner ≥ Softcaps",
+	num: "0.0.5.0",
+	name: "Worldwide Paces",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.5.0</h3><br>
+		- Add Institution layer.<br>
+		- Some balance rework.<br>
+		- Add some achievements' images, thanks to River咕咕酱 for drawing raw images.<br>
+		……and Sxy62146214 on Antimatter-dimensions related achievement image.<br>
 	<h3>v0.0.4.0</h3><br>
 		- All row4 QoL added.<br>
 		- Call row5 done.<br>
@@ -79,6 +84,14 @@ function getPointGen() {
 	if (hasMilestone('lab',1)) gain = gain.times(player.lab.points.max(1));
 	if (hasUpgrade('storylayer',12)) gain = gain.times(upgradeEffect('storylayer',12));
 	if (hasAchievement('a',92)) gain = gain.times(achievementEffect('a',92));
+	if (hasMilestone('ins',3)) gain = gain.times(tmp['ins'].milestones[3].effect)
+	if (hasMilestone('ins',3)) gain = gain.times(layers.ins.insEffect().Sau().Pos())
+	if (hasMilestone('ins',4)) gain = gain.times(layers.ins.insEffect().Kaz())
+	if (hasMilestone('ins',4)) gain = gain.times(layers.ins.insEffect().Ind())
+	if (hasMilestone('ins',4)) gain = gain.times(layers.ins.insEffect().Chn().Pos());
+	if (hasMilestone('ins',5)) gain = gain.times(layers.ins.insEffect().Can())
+	if (hasMilestone('ins',5)) gain = gain.times(layers.ins.insEffect().Bra())
+	if (hasAchievement('a',113)) gain = gain.times(buyableEffect('lab',12).eff2());
 	
 	//POW
 	if (hasUpgrade('dark', 12))gain = gain.times(tmp.dark.effect.pow(0.5));
@@ -86,7 +99,7 @@ function getPointGen() {
 	if (hasChallenge("kou",21)) gain = gain.pow(1.025);
 	if (inChallenge("kou",11)) gain = gain.pow(0.75);
 	if (inChallenge("kou",21)) gain = gain.pow(1.05);
-	if (hasUpgrade('lab',73)) gain = gain.pow(buyableEffect('lab',12));
+	if (hasUpgrade('lab',73)) gain = gain.pow(buyableEffect('lab',12).eff1());
 	if (inChallenge('rei',11)) gain = gain.pow(0.5);
 	if (player.world.restrictChallenge&&!hasUpgrade('storylayer',14)) gain = gain.pow(0.9);
 	if (challengeCompletions('saya',21)) gain=gain.pow(challengeEffect('saya',21))

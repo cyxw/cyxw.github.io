@@ -27,6 +27,9 @@ addLayer("mem", {
         if (hasChallenge('kou',22)) sc = sc.times(100).times(tmp.kou.effect.max(1));
         if (hasAchievement('a',44)) sc = sc.times(Math.sqrt(player.mem.resetTime+1));
         if (challengeCompletions('saya',22)) sc=sc.times(challengeEffect('saya',22));
+        if (hasMilestone('ins',1)) sc=sc.times(layers.ins.insEffect().Che())
+        if (hasMilestone('ins',3)) sc=sc.times(layers.ins.insEffect().Isr().Pos())
+        if (hasMilestone('ins',7)) sc=sc.times(layers.ins.insEffect().Nzl())
 
         return sc;
     },
@@ -52,6 +55,9 @@ addLayer("mem", {
         if (hasUpgrade('lethe',34)) mult = mult.times(upgradeEffect('lethe',34));
         if (hasMilestone('lab',2)) mult = mult.times(player.lab.power.div(10).max(1));
 	    if (hasUpgrade('storylayer',12)) mult = mult.times(upgradeEffect('storylayer',12));
+        if (hasMilestone('ins',4)) mult = mult.times(layers.ins.insEffect().Jpn());
+        if (hasMilestone('ins',4)) mult = mult.times(layers.ins.insEffect().Chn().Pos())
+        if (hasAchievement('a',113)) mult  = mult.times(buyableEffect('lab',13).eff2())
 
 
         if (inChallenge("kou",11)) mult = mult.pow(0.75);
@@ -72,7 +78,7 @@ addLayer("mem", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         exp = new Decimal(1)
         if (hasUpgrade('mem', 13)) exp = exp.times(upgradeEffect('mem', 13));
-        if (hasUpgrade('lab',74)) exp = exp.plus(buyableEffect('lab',13));
+        if (hasUpgrade('lab',74)) exp = exp.plus(buyableEffect('lab',13).eff1());
         return exp
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
@@ -375,6 +381,8 @@ addLayer("light", {
         if (hasUpgrade('storylayer',21)) mult = mult.div(upgradeEffect('storylayer',21));
         if (hasUpgrade('storylayer',22)) mult = mult.div(player.rei.points.div(2).max(1));
         if (inChallenge('saya',42)) mult = mult.times(tmp["dark"].effect.log(layers.saya.challenges[42].debuff()));
+        if (hasMilestone('ins',1)) mult = mult.div(layers.ins.insEffect().Fra().Pos());
+        if (hasMilestone('ins',2)) mult = mult.div(layers.ins.insEffect().Rus().Pos());
 
         return mult;
     },
@@ -635,6 +643,8 @@ addLayer("dark", {
         if (hasUpgrade('storylayer',21)) mult = mult.div(upgradeEffect('storylayer',21));
         if (hasUpgrade('storylayer',22)) mult = mult.div(player.yugamu.points.div(2).max(1));
         if (challengeCompletions('saya',42)) mult = mult.div(challengeEffect('saya',42));
+        if (hasMilestone('ins',1)) mult = mult.div(layers.ins.insEffect().Deu().Pos());
+        if (hasMilestone('ins',2)) mult = mult.div(layers.ins.insEffect().Rus().Pos());
         return mult;
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -893,6 +903,7 @@ addLayer("kou", {
         if (hasMilestone('lab',5)) mult = mult.div(player.lab.power.div(10).max(1));
         if (hasUpgrade('lab',93)) mult = mult.div(buyableEffect('lab',31));
         if (hasMilestone('rei',4)) mult = mult.div(tmp["rei"].challenges[11].effecttoRF);
+        if (hasMilestone('ins',1)) mult = mult.div(layers.ins.insEffect().Fra().Pos());
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -1217,6 +1228,7 @@ addLayer("lethe", {
         if (hasMilestone('lab',6)) mult = mult.times(player.lab.power.div(10).max(1));
         if (hasUpgrade('lab',94)) mult = mult.times(buyableEffect('lab',32));
         if (hasMilestone('rei',4)) mult = mult.times(tmp["rei"].challenges[11].effecttoRF);
+        if (hasMilestone('ins',1)) mult = mult.times(layers.ins.insEffect().Deu().Pos());
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -2055,6 +2067,7 @@ addLayer("rei", {
 
     type: "static",
     exponent: 1.5,
+    roundUpCost:true,
 
     autoPrestige(){return (hasMilestone('etoluna',3)&&player.rei.auto)},
     canBuyMax() { return hasMilestone('etoluna',4) },
@@ -2095,10 +2108,16 @@ addLayer("rei", {
         if (hasUpgrade('lab',143)) mult = mult.div(upgradeEffect('lab',143));
         if (hasUpgrade('storylayer',32)) mult = mult.div(upgradeEffect('storylayer',32));
         if (hasUpgrade('lab',163)) mult = mult.div(buyableEffect('lab',23));
+        if (hasMilestone('ins',1)) mult = mult.div(layers.ins.insEffect().Fra().Pos());
         return mult;
     },
     gainExp() {  
         return new Decimal(1)
+    },
+    directMult(){
+        let dm = new Decimal(1);
+        if (hasMilestone('ins',3)) dm=dm.times(layers.ins.insEffect().Egy().Pos());
+        return dm;
     },
 
     layerShown() { return hasAchievement('lab',21)&&hasChallenge('kou',51)||player[this.layer].unlocked  }, 
@@ -2147,14 +2166,15 @@ addLayer("rei", {
                 if (hasUpgrade('world',33)) mult = mult.times(upgradeEffect('world',33));
                 if (hasUpgrade('lab',141)) mult = mult.times(upgradeEffect('lab',141));
                 if (hasMilestone('etoluna',2)&&!inChallenge('rei',11)) mult = mult.times(player.rei.roses.plus(1).log(20).div(50).max(0.01).min(0.5));
+                if (hasMilestone('ins',1)) mult = mult.times(layers.ins.insEffect().Fra().Pos());
+                if (hasAchievement('a',102)) mult = mult.times(tmp["saya"].effect);
+                if (hasUpgrade('lab',181)) mult = mult.times(buyableEffect('lab',23))
                 return mult;
             },
             amt(){//gain per sec
                 let gain = player.points.plus(1).log10().div(50).max(0).sqrt();
                 gain =gain.times(this.gainMult());
                 gain =gain.times(challengeEffect('saya',41));
-                if (hasAchievement('a',102)) gain = gain.times(tmp["saya"].effect);
-                if (hasUpgrade('lab',181)) gain = gain.times(buyableEffect('lab',23))
                 return gain;
             },
             onEnter(){
@@ -2222,6 +2242,7 @@ addLayer("yugamu", {
 
     type: "static",
     exponent: 1.5,
+    roundUpCost:true,
 
     tabFormat: {
         "Milestones": {
@@ -2275,12 +2296,17 @@ addLayer("yugamu", {
         if (hasUpgrade('lab',144)) mult = mult.div(upgradeEffect('lab',144));
         if (hasUpgrade('storylayer',32)) mult = mult.div(upgradeEffect('storylayer',32));
         if (hasUpgrade('lab',163)) mult = mult.div(buyableEffect('lab',33));
+        if (hasMilestone('ins',1)) mult = mult.div(layers.ins.insEffect().Deu().Pos());
         return mult;
     },
     gainExp() {  
         return new Decimal(1)
     },
-
+    directMult(){
+        let dm = new Decimal(1);
+        if (hasMilestone('ins',3)) dm=dm.times(layers.ins.insEffect().Egy().Pos());
+        return dm;
+    },
     layerShown() { return hasAchievement('lab',21)&&hasChallenge('kou',51)||player[this.layer].unlocked }, 
     autoPrestige(){return (hasMilestone('saya',3)&&player.yugamu.auto)},
     canBuyMax() { return hasMilestone('saya',4) },
@@ -2442,6 +2468,7 @@ addLayer("yugamu", {
                 let eff = player.yugamu.buyables[this.id].div(2).plus(1);
                 if (hasUpgrade('lab',131)) eff = player.yugamu.buyables[this.id].div(1.5).plus(1);
                 eff = eff.times(buyableEffect('yugamu',22));
+                if (hasMilestone('ins',1)) eff = eff.times(layers.ins.insEffect().Deu().Pos());
                 return eff;
             },
             autoed(){return hasUpgrade('storylayer',15)},
@@ -2471,6 +2498,7 @@ addLayer("yugamu", {
                 let eff = player.yugamu.buyables[this.id].div(20).plus(1);
                 if (hasUpgrade('lab',133)) eff = player.yugamu.buyables[this.id].div(10).plus(1);
                 eff = eff.times(buyableEffect('yugamu',22));
+                if (hasMilestone('ins',1)) eff = eff.times(layers.ins.insEffect().Deu().Pos());
                 return eff;
             },
             autoed(){return hasUpgrade('storylayer',15)},
@@ -2499,6 +2527,7 @@ addLayer("yugamu", {
             effect(){
                 let eff = player.yugamu.buyables[this.id].div(50).plus(1);
                 if (hasUpgrade('lab',132)) eff = player.yugamu.buyables[this.id].div(25).plus(1);
+                if (hasMilestone('ins',1)) eff = eff.times(layers.ins.insEffect().Deu().Pos());
                 return eff;
             },
             autoed(){return hasUpgrade('storylayer',15)},
@@ -2528,6 +2557,7 @@ addLayer("yugamu", {
                 let eff = player.yugamu.buyables[this.id].div(5).plus(1);
                 if (hasUpgrade('lab',134)) eff = player.yugamu.buyables[this.id].div(4).plus(1);
                 eff = eff.times(buyableEffect('yugamu',22));
+                if (hasMilestone('ins',1)) eff = eff.times(layers.ins.insEffect().Deu().Pos());
                 return eff;
             },
             autoed(){return hasUpgrade('storylayer',15)},
@@ -2634,6 +2664,7 @@ addLayer("world", {
     WorldstepHeightsc(){
         let sc = new Decimal(100000);
         if (hasUpgrade('etoluna',12)) sc = sc.times(tmp.etoluna.moonPointeffect);
+        if (hasMilestone('ins',6)) sc = sc.times(layers.ins.insEffect().Zaf());
         return sc;
     },
 
@@ -2700,7 +2731,11 @@ addLayer("world", {
         let softcappower = layers[this.layer].restrictsoftcapexp();
         let reward = Decimal.pow(1.5,player.world.restrictionnum);
         if (reward.gte(softcap)) reward = softcap.plus(Decimal.pow(reward.sub(softcap),softcappower));
-        return reward.min(hardcap);
+        if (!hasUpgrade('storylayer',43)){return reward.min(hardcap);}
+        else{
+            if (reward.gte(hardcap)) reward = reward.sub(hardcap).max(1).log(10).max(1).log(10).max(0).times(hardcap).plus(hardcap);
+            return reward;
+        }
     },
 
     restrictsoftcap(){
@@ -2982,7 +3017,8 @@ addLayer("saya",{
         total:new Decimal(0),
         Timer41: new Decimal(0),
         bestroses41:new Decimal(0),
-        unlockOrder:0,            
+        unlockOrder:0,  
+        auto:false,          
     }},
 
     name: "Everflashing Knives",
@@ -3015,6 +3051,7 @@ addLayer("saya",{
     gainExp() {                             
         return new Decimal(1)
     },
+    canBuyMax() { return hasMilestone('ins',2) },
 
     layerShown() {return hasUpgrade('storylayer',23)},  
     
@@ -3044,7 +3081,15 @@ addLayer("saya",{
             if (!player.dark.auto) player.dark.auto = true;
         }
     },
-
+    doReset(resettingLayer){
+        let keep = [];
+        if (hasMilestone('ins',0)) keep.push('milestones');
+        if (hasMilestone('ins',1)) keep.push('challenges');
+        if (hasMilestone('ins',4)) keep.push('auto');
+        if (layers[resettingLayer].row > this.row) layerDataReset('saya', keep);
+    },
+    autoPrestige(){return hasMilestone('ins',4)&&player.saya.auto},
+    resetsNothing(){return hasMilestone('ins',5)},
     tabFormat: {
         "Milestones": {
             content: [
@@ -3134,7 +3179,7 @@ addLayer("saya",{
             rewardEffect(){
                 return Decimal.pow(2,challengeCompletions(this.layer, this.id));
             },
-            unlocked() { return player.saya.unlocked},
+            unlocked() { return player.saya.unlocked||hasMilestone('ins',1)},
             goal() { return new Decimal(1e195).times(Decimal.pow(1e5,challengeCompletions(this.layer, this.id))) },
             currencyDisplayName: "Fragments",
             currencyInternalName: "points",
@@ -3154,7 +3199,7 @@ addLayer("saya",{
             rewardEffect(){
                 return Decimal.pow(3,challengeCompletions(this.layer, this.id));
             },
-            unlocked() { return player[this.layer].best.gte(2)},
+            unlocked() { return player[this.layer].best.gte(2)||hasMilestone('ins',1)},
             goal() { return new Decimal(1e195).times(Decimal.pow(1e5,challengeCompletions(this.layer, this.id))) },
             currencyDisplayName: "Fragments",
             currencyInternalName: "points",
@@ -3174,7 +3219,7 @@ addLayer("saya",{
             rewardEffect(){
                 return new Decimal(1).plus(0.01*challengeCompletions(this.layer, this.id));
             },
-            unlocked() { return player[this.layer].best.gte(5)},
+            unlocked() { return player[this.layer].best.gte(5)||hasMilestone('ins',1)},
             goal() { return new Decimal(1e220).times(Decimal.pow(1e10,challengeCompletions(this.layer, this.id))) },
             currencyDisplayName: "Fragments",
             currencyInternalName: "points",
@@ -3194,7 +3239,7 @@ addLayer("saya",{
             rewardEffect(){
                 return Decimal.pow(10,challengeCompletions(this.layer, this.id));
             },
-            unlocked() { return player[this.layer].best.gte(10)},
+            unlocked() { return player[this.layer].best.gte(10)||hasMilestone('ins',1)},
             goal() { return new Decimal(1e300).times(Decimal.pow(1e10,challengeCompletions(this.layer, this.id))) },
             currencyDisplayName: "Memories",
             currencyInternalName: "points",
@@ -3215,7 +3260,7 @@ addLayer("saya",{
             rewardEffect(){
                 return Decimal.pow(1.25,challengeCompletions(this.layer, this.id));
             },
-            unlocked() { return player[this.layer].best.gte(15)},
+            unlocked() { return player[this.layer].best.gte(15)||hasMilestone('ins',1)},
             goal() { return new Decimal(350).plus(Decimal.times(50,challengeCompletions(this.layer, this.id)+(Math.max(challengeCompletions(this.layer, this.id)-1)*0.25))) },
             currencyDisplayName: "Red Rolls",
             currencyInternalName: "points",
@@ -3239,7 +3284,7 @@ addLayer("saya",{
             onEnter(){
                 player.lethe.upgrades = [];
             },
-            unlocked() { return player[this.layer].best.gte(25)},
+            unlocked() { return player[this.layer].best.gte(25)||hasMilestone('ins',1)},
             goal() { return new Decimal(1e240).times(Decimal.pow(1e5,challengeCompletions(this.layer, this.id))) },
             currencyDisplayName: "Forgotten Drops",
             currencyInternalName: "points",
@@ -3264,7 +3309,7 @@ addLayer("saya",{
             onExit(){
                 player.saya.bestroses41 = new Decimal(0);
             },
-            unlocked() { return player[this.layer].best.gte(35)&&hasUpgrade('storylayer',31)},
+            unlocked() { return player[this.layer].best.gte(35)&&hasUpgrade('storylayer',31)||hasMilestone('ins',1)},
             goal() { return new Decimal(500).times(Decimal.pow(2.5,challengeCompletions(this.layer, this.id))) },
             canComplete(){
                 let goal = this.goal();
@@ -3288,7 +3333,7 @@ addLayer("saya",{
                 let LaheadD = player.light.points.div(player.dark.points.max(1));
                 return Decimal.pow(challengeCompletions(this.layer, this.id)+1,LaheadD).max(1);
             },
-            unlocked() { return player[this.layer].best.gte(40)&&hasUpgrade('storylayer',31)},
+            unlocked() { return player[this.layer].best.gte(40)&&hasUpgrade('storylayer',31)||hasMilestone('ins',1)},
             goal() { return new Decimal(15000000).plus(Decimal.times(1000000,challengeCompletions(this.layer, this.id))) },
             currencyDisplayName: "Light Tachyons",
             currencyInternalName: "points",
@@ -3349,12 +3394,27 @@ addLayer("etoluna",{
         return "which are giving you the base speed of gaining Star Points/Moon Points of "+format(tmp.etoluna.effect)+ "/s"
     },
 
-    layerShown() {return hasUpgrade('storylayer',23)},  
+    layerShown() {return hasUpgrade('storylayer',23)},
+    passiveGeneration(){
+        let pg=0;
+        if (hasMilestone('ins',2)) pg +=0.1;
+        return pg;
+    },
+
+    
+    doReset(resettingLayer){
+        let keep = [];
+        if (hasMilestone('ins',0)) keep.push('milestones');
+        if (hasMilestone('ins',1)) keep.push('upgrades');
+        if  (hasMilestone('ins',4)) {keep.push('starPoint');keep.push('moonPoint');}
+        if (layers[resettingLayer].row > this.row) layerDataReset('etoluna', keep);
+    },
 
     //Tower related
     gainstarPoints(){
         let gain = tmp.etoluna.effect.times(Decimal.pow(10,(player.etoluna.allotted*2-1)));
         if (player.etoluna.allotted<=0) gain = tmp.etoluna.effect.times(0.1);//break_eternity.js issue, can be solved by updating
+        if (hasMilestone('ins',6)) gain = tmp.etoluna.effect.times(Decimal.pow(10,1));
         if (hasUpgrade('storylayer',25)) gain = gain.times(player.etoluna.moonPoint.div(player.etoluna.starPoint.max(1)).max(1));
 
         return gain;
@@ -3362,6 +3422,7 @@ addLayer("etoluna",{
 
     starPointeffect(){//tmp
         let eff = player.etoluna.starPoint.plus(1).log(7.5).max(1);
+        if (player.ins.inslevel.Arg.gt(0)) eff=player.etoluna.starPoint.plus(player.etoluna.moonPoint.pow(layers.ins.insEffect().Arg())).plus(1).log(7.5).max(1);
         if (hasUpgrade('etoluna',23)) eff = eff.pow(1.25);
         return eff;
     },
@@ -3369,6 +3430,7 @@ addLayer("etoluna",{
     gainmoonPoints(){
         let gain = tmp.etoluna.effect.times(Decimal.pow(10,((1-player.etoluna.allotted)*2-1)));
         if ((1-player.etoluna.allotted)<=0) gain = tmp.etoluna.effect.times(0.1);//break_eternity.js issue, can be solved by updating
+        if (hasMilestone('ins',6)) gain = tmp.etoluna.effect.times(Decimal.pow(10,1));
         if (hasUpgrade('storylayer',25)) gain = gain.times(player.etoluna.starPoint.div(player.etoluna.moonPoint.max(1)).max(1));
         return gain;
     },
@@ -3376,6 +3438,7 @@ addLayer("etoluna",{
     moonPointeffect(){//tmp
         let eff = player.etoluna.moonPoint.plus(1).log(5).max(0).div(50).plus(1);
         if (hasUpgrade('etoluna',24)) eff = player.etoluna.moonPoint.pow(1/3).times(1.5).div(50).max(0).plus(1);
+        if (player.ins.inslevel.Arg.gt(0)) eff = player.etoluna.moonPoint.plus(player.etoluna.starPoint.pow(layers.ins.insEffect().Arg())).pow(1/3).times(1.5).div(50).max(0).plus(1);
         return eff;
     },
 
@@ -3428,13 +3491,14 @@ addLayer("etoluna",{
                         "blank",
                         ["display-text",function() {return hasAchievement('a',93)?("Which boosts All Glowing Roses effect by <h3>"+format(tmp.etoluna.starPointeffect)+"</h3>x"):""},{}],
                         "blank",
-                    ],{width:"50%"}],
+                    ]],
+                    ["blank",["50px","50px"]],
                     ["column", [
                         ["display-text",function() {return "You have <h3 style='color: #d7a9f4;'>"+formatWhole(player.etoluna.moonPoint)+"</h3> Moon Points."},{}],
                         "blank",
                         ["display-text",function() {return hasAchievement('a',93)?("Which ÷<h3>"+format(tmp.etoluna.moonPointeffect)+"</h3> World Step Height."):""},{}],
                         "blank",
-                    ],{width:"50%"}],]
+                    ]],]
                     ,{}],
                 "blank",
                 ["row",[["upgrade","11"],["upgrade","13"],["blank",["50px","50px"]],["upgrade","14"],["upgrade","12"]]],
@@ -3825,6 +3889,7 @@ addLayer("a", {
             name: "Stacks^Stacks",
             done() { return player.points.gte(9.99e18)},
             tooltip: "Gain 9.99e18 Fragments.<br>Rewards:Fragments now make Memory softcap starts later.",
+            image:"img/acv/25.png",
         },
         31: {
             name: "Other Angles",
@@ -3835,6 +3900,7 @@ addLayer("a", {
             name: "Finally I Get Rid of You!",
             done() { return hasMilestone('kou',2)&&hasMilestone('lethe',2)},
             tooltip: "Reach R&F's 3rd milestone.<br>Rewards:Keep Directly Transfer when L or D reset, and Fragment Sympathy will always give back its cost.",
+            image:"img/acv/32.png",
         },
         33: {
             name: "Plenty of them",
@@ -3877,7 +3943,7 @@ addLayer("a", {
         44: {
             name: "I Can Idle (For) Now",
             done() { return hasUpgrade('lethe',15)&&hasUpgrade('lethe',51)&&hasAchievement('a',33)},
-            tooltip: "Make L,D,R,M's effects increases over their own reset time.<br>Rewards:Memory softcap starts later based on its own reset time.",
+            tooltip: "Make L,D,R,F's effects increases over their own reset time.<br>Rewards:Memory softcap starts later based on its own reset time.",
         },
         45: {
             name: "9 isn't a lie!",
@@ -3893,6 +3959,7 @@ addLayer("a", {
             name: "Stacks e(Stacks)",
             done() { return player.points.gte(9.99e99) },
             tooltip: "Gain 9.99e99 Fragments.",
+            image:"img/acv/52.png",
         },
         53: {
             name: "Beacons Beside Lethe",
@@ -3975,6 +4042,7 @@ addLayer("a", {
             name: "Currently, nothing here",
             done() { return player.storylayer.unlocked},
             tooltip: "Begin your stories.",
+            image:"img/acv/81.png",
         },
         82: {
             name: "Lossy Move",
@@ -4058,6 +4126,29 @@ addLayer("a", {
             name: "Liner ≥ Softcaps",
             done() { return hasUpgrade('lab',194)},
             tooltip: "Unlock Softcap Book.",
+        },
+        111: {
+            name: "Worldwide Paces",
+            done() { return player.ins.unlocked},
+            tooltip: "Unlock Institutions.",
+        },
+        112: {
+            name: "Seriously?",
+            done() { return player.yugamu.timesmoved.gte(50000)},
+            tooltip: "Move more than 50,000 times in Maze.<br>Rewards:Times moved in Maze slightly decrease Institution Fund requirement",
+            effect(){
+                return player.yugamu.timesmoved.max(1).log10().times(0.05).plus(1);
+            },
+        },
+        113: {
+            name: "You Can't Rely on These Forever",
+            done() { return player['lab'].buyables[12].gte(100)&&player['lab'].buyables[13].gte(200)},
+            tooltip: "Reach Fragment Transformer & Memory Transformer's Effect Hardcap.<br>Rewards:Their overflowing levels provide weaker effects",
+        },
+        114: {
+            name: "One World, One Goal",
+            done() { return player.ins.inslevel.Eng.gte(1)&&player.ins.inslevel.Fra.gte(1)&&player.ins.inslevel.Deu.gte(1)&&player.ins.inslevel.Che.gte(1)&&player.ins.inslevel.Pol.gte(1)&&player.ins.inslevel.Nor.gte(1)&&player.ins.inslevel.Rus.gte(1)&&player.ins.inslevel.Egy.gte(1)&&player.ins.inslevel.Sau.gte(1)&&player.ins.inslevel.Isr.gte(1)&&player.ins.inslevel.Jpn.gte(1)&&player.ins.inslevel.Ind.gte(1)&&player.ins.inslevel.Kaz.gte(1)&&player.ins.inslevel.Chn.gte(1)&&player.ins.inslevel.Can.gte(1)&&player.ins.inslevel.Usa.gte(1)&&player.ins.inslevel.Bra.gte(1)&&player.ins.inslevel.Arg.gte(1)&&player.ins.inslevel.Nga.gte(1)&&player.ins.inslevel.Zaf.gte(1)&&player.ins.inslevel.Aus.gte(1)&&player.ins.inslevel.Nzl.gte(1)},
+            tooltip: "Let all Institution sites work at least lv.1.",
         },
     },
     tabFormat: [
@@ -4143,6 +4234,16 @@ addLayer("ab", {
 			onClick() { player.yugamu.auto = !player.yugamu.auto },
 			style: {"background-color"() { return player.yugamu.auto?"#716f5e":"#666666" }},
 		    },
+        23: {
+            title: "Everflashing Knives",
+            display(){
+                return (hasMilestone('ins',4))?(player.saya.auto?"On":"Off"):"Locked"
+            },
+            unlocked() { return tmp["saya"].layerShown&&player.ins.unlocked },
+            canClick() { return hasMilestone('ins',4) },
+            onClick() { player.saya.auto = !player.saya.auto },
+            style: {"background-color"() { return player.saya.auto?"#16a951":"#666666" }},
+            },
 	},
 })
 
@@ -4164,6 +4265,34 @@ addLayer("sc", {
             ["display-text",
 			function() {return "<h3 style='color: #00bdf9;'>Research Point</h3><br>Softcap:"+format(layers.lab.pointsoftcap())},
 			{}],
+            function(){if (player.lab.buyables[12].gte(100)) return "blank"},
+            ["display-text",
+			function() {if (player.lab.buyables[12].gte(100)) return "<h3>Fragment</h3> <h3 style='color: #00bdf9;'>Transformer</h3><br>Effect hardcap ends at ^1.1"+((hasAchievement('a',113))?"<br>Exceeding levels give weaker effect instead":"")},
+			{}],
+            function(){if (player.lab.buyables[13].gte(200)) return "blank"},
+            ["display-text",
+			function() {if (player.lab.buyables[13].gte(200)) return "<h3 style='color: #c939db;'>Memory</h3> <h3 style='color: #00bdf9;'>Transformer</h3><br>Effect hardcap ends at ^+0.2"+((hasAchievement('a',113))?"<br>Exceeding levels give weaker effect instead":"")},
+			{}],
+            function(){if (player.lab.buyables[21].gte(40000)||buyableEffect('lab',21).gt(1500)) return "blank"},
+            ["display-text",
+			function() {
+                let des="";
+                if (player.lab.buyables[21].gte(40000)||buyableEffect('lab',21).gt(1500)) des+= "<h3 style='color: #ededed;'>Light</h3> <h3 style='color: #00bdf9;'>Transformer</h3>";
+                if (player.lab.buyables[21].gte(40000)) des += "<br>Cost ^1.5 after transformed 40,000 times"
+                if (buyableEffect('lab',21).gt(1500)) des += "<br>Effect softcap:1,500x<br>Softcap exponent:0.25"
+                return des;
+            },
+			{}],
+            function(){if (player.lab.buyables[22].gte(40000)||buyableEffect('lab',22).gt(1500)) return "blank"},
+            ["display-text",
+			function() {
+                let des="";
+                if (player.lab.buyables[22].gte(40000)||buyableEffect('lab',21).gt(1500)) des+= "<h3 style='color: #383838;'>Dark</h3> <h3 style='color: #00bdf9;'>Transformer</h3>";
+                if (player.lab.buyables[22].gte(40000)) des += "<br>Cost ^1.5 after transformed 40,000 times"
+                if (buyableEffect('lab',22).gt(1500)) des += "<br>Effect softcap:1,500x<br>Softcap exponent:0.25"
+                return des;
+            },
+			{}],
             "blank",
             ["display-text",
 			function() {return "<h3 style='color: #ddeee3;'>World Step Height</h3><br>Softcap:"+format(layers.world.WorldstepHeightsc())+"<br>Exceeding exponent:"+format(layers.world.WorldstepHeightscexp())},
@@ -4174,7 +4303,12 @@ addLayer("sc", {
 			{}],
             "blank",
             ["display-text",
-			function() {return "<h3 style='color: #e8272a;'>Restricted World Step effect</h3><br>Softcap:"+format(layers.world.restrictsoftcap())+"<br>Exponent:"+format(layers.world.restrictsoftcapexp())+"<br>Hardcap ends at:"+format(layers.world.restricthardcap())},
+			function() {
+                let des = "<h3 style='color: #e8272a;'>Restricted World Step effect</h3><br>Softcap:"+format(layers.world.restrictsoftcap())+"<br>Exponent:"+format(layers.world.restrictsoftcapexp())
+                if (!hasUpgrade('storylayer',43)) des += ("<br>Hardcap ends at:"+format(layers.world.restricthardcap()))
+                else des += ("<br>Secondary softcap:"+format(layers.world.restricthardcap())+"<br>Exceeding effect log10-ed two times, then times Secondary softcap.")
+                return des;
+            },
 			{}],
     ],
 })
